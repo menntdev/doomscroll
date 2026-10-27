@@ -106,7 +106,7 @@ public class DoomscrollClient implements ClientModInitializer {
 
 	/** R while holding the tablet: portrait/landscape mode. Does not work while the keyboard is captured by a screen or a GUI is open. */
 	private static void tickPortraitKey(Minecraft client) {
-		boolean down = com.mojang.blaze3d.platform.InputConstants.isKeyDown(client.getWindow(), org.lwjgl.glfw.GLFW.GLFW_KEY_R);
+		boolean down = com.mojang.blaze3d.platform.InputConstants.isKeyDown(com.mojang.blaze3d.platform.InputConstants.KEY_R);
 		boolean pressed = down && !portraitKeyWasDown;
 		portraitKeyWasDown = down;
 		if (!pressed || client.player == null || client.gui.screen() != null || DirectControl.isKeyboardCaptured()) {

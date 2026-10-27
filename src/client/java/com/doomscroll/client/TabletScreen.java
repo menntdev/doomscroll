@@ -12,7 +12,6 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -506,7 +505,7 @@ public class TabletScreen extends Screen {
 
 	@Override
 	public boolean mouseClicked(MouseButtonEvent event, boolean doubled) {
-		if (event.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+		if (event.button() == com.mojang.blaze3d.platform.InputConstants.MOUSE_BUTTON_LEFT) {
 			for (Ui.Btn bt : bar) {
 				if (bt.contains(event.x(), event.y())) {
 					bt.action().run();
@@ -618,13 +617,13 @@ public class TabletScreen extends Screen {
 	@Override
 	public boolean keyPressed(KeyEvent event) {
 		if (urlBox != null && urlBox.isFocused()) {
-			if (event.key() == GLFW.GLFW_KEY_ENTER || event.key() == GLFW.GLFW_KEY_KP_ENTER) {
+			if (event.key() == com.mojang.blaze3d.platform.InputConstants.KEY_RETURN || event.key() == com.mojang.blaze3d.platform.InputConstants.KEY_NUMPADENTER) {
 				go();
 				return true;
 			}
 			return super.keyPressed(event);
 		}
-		if (event.key() == GLFW.GLFW_KEY_ESCAPE) {
+		if (event.key() == com.mojang.blaze3d.platform.InputConstants.KEY_ESCAPE) {
 			if (volOpen) {
 				volOpen = false;
 				return true;

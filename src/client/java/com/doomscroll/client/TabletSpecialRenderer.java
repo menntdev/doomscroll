@@ -65,9 +65,9 @@ public class TabletSpecialRenderer implements SpecialModelRenderer<UUID> {
 		if (portrait) {
 			// Phone mode: the pad rotates 90 degrees around the screen normal (Y); the screen still faces the player, long edge vertical
 			poseStack.translate(0.5f, T / 2f, 4.5f / 16f);
-			poseStack.mulPose(com.mojang.math.Axis.YP.rotationDegrees(90f));
+			poseStack.rotate(com.mojang.math.Axis.YP.rotationDegrees(90f));
 			// ... and tilt it up around its short axis: the phone stands upright, the screen faces the player
-			poseStack.mulPose(com.mojang.math.Axis.XP.rotationDegrees(-80f));
+			poseStack.rotate(com.mojang.math.Axis.XP.rotationDegrees(-80f));
 			poseStack.translate(-0.5f, -T / 2f, -4.5f / 16f);
 		}
 

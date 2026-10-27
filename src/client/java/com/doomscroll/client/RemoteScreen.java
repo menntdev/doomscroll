@@ -15,7 +15,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -735,7 +734,7 @@ public class RemoteScreen extends Screen {
 
 	@Override
 	public boolean mouseClicked(MouseButtonEvent event, boolean doubled) {
-		if (event.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+		if (event.button() == com.mojang.blaze3d.platform.InputConstants.MOUSE_BUTTON_LEFT) {
 			if (inSlider(event.x(), event.y())) {
 				draggingSlider = true;
 				setVolumeFromMouse(event.x());
@@ -786,7 +785,7 @@ public class RemoteScreen extends Screen {
 	@Override
 	public boolean keyPressed(KeyEvent event) {
 		if (urlBox != null && urlBox.isFocused()
-				&& (event.key() == GLFW.GLFW_KEY_ENTER || event.key() == GLFW.GLFW_KEY_KP_ENTER)) {
+				&& (event.key() == com.mojang.blaze3d.platform.InputConstants.KEY_RETURN || event.key() == com.mojang.blaze3d.platform.InputConstants.KEY_NUMPADENTER)) {
 			go(urlBox.getValue());
 			return true;
 		}

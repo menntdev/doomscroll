@@ -1,6 +1,5 @@
 package com.doomscroll;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
@@ -29,7 +28,6 @@ import net.minecraft.world.phys.BlockHitResult;
  * Panel geometry is built everywhere from the same two vectors: right = top x front, extend (the viewer's left) = front x top.
  */
 public class ScreenBlock extends BaseEntityBlock {
-	public static final MapCodec<ScreenBlock> CODEC = simpleCodec(ScreenBlock::new);
 	/** Direction the front face looks toward. Compatible with old worlds: same name and horizontal values, up/down added. */
 	public static final EnumProperty<Direction> FACING = BlockStateProperties.FACING;
 	/** Top edge of the image on a floor/ceiling screen (north/south/east/west). Not used on a wall screen. */
@@ -40,11 +38,6 @@ public class ScreenBlock extends BaseEntityBlock {
 	public ScreenBlock(Properties properties) {
 		super(properties);
 		registerDefaultState(getStateDefinition().any().setValue(FACING, Direction.NORTH).setValue(TOP, Direction.NORTH).setValue(LIT, true));
-	}
-
-	@Override
-	protected MapCodec<? extends BaseEntityBlock> codec() {
-		return CODEC;
 	}
 
 	@Override
@@ -169,7 +162,8 @@ public class ScreenBlock extends BaseEntityBlock {
 		}
 		level.removeBlock(pos, false);
 		if (!p.getAbilities().instabuild) {
-			p.getInventory().placeItemBackInInventory(new net.minecraft.world.item.ItemStack(Doomscroll.SCREEN_BLOCK));
+			p.getInventory().placeItemBackInInventory(new net.minecraft.world.item.ItemStack(Doomscroll.SCREEN_BLOCK),
+					net.minecraft.util.Prediction.SERVER_ONLY);
 		}
 		p.sendOverlayMessage(why);
 		return true;

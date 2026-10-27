@@ -4,9 +4,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.AddressMode;
-import com.mojang.blaze3d.textures.FilterMode;
-import com.mojang.blaze3d.textures.GpuSampler;
+import com.mojang.renderpearl.api.textures.AddressMode;
+import com.mojang.renderpearl.api.textures.FilterMode;
+import com.mojang.renderpearl.api.textures.GpuSampler;
 import com.doomscroll.cef.api.CefService;
 import com.doomscroll.cef.api.CefBrowserView;
 import net.minecraft.core.BlockPos;
@@ -496,7 +496,7 @@ public final class Browsers {
 		}
 		x = Math.max(0, x);
 		y = Math.max(0, y);
-		var info = new net.minecraft.client.input.MouseButtonInfo(org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT, 0);
+		var info = new net.minecraft.client.input.MouseButtonInfo(com.mojang.blaze3d.platform.InputConstants.MOUSE_BUTTON_LEFT, 0);
 		b.onMouseMoved(x, y);
 		b.onMouseClicked(new net.minecraft.client.input.MouseButtonEvent(x, y, info), false);
 		b.onMouseReleased(new net.minecraft.client.input.MouseButtonEvent(x, y, info));

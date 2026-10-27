@@ -6,7 +6,7 @@
 
 Watch Reels / Shorts / TikTok / YouTube / films **together** inside Minecraft. Build huge screens in the world, carry a tablet, drive everything with a remote, turn a room into a cinema. It started as a joke and became real.
 
-- Minecraft **26.2** · Fabric · Java 25
+- Minecraft **26.3** · Fabric · Java 25
 - A real Chromium (CEF 126 with H.264/AAC codecs), supplied by the sibling project [`mcef-codec`](https://github.com/menntdev/mcef-codec)
 - Positional audio (it comes from the nearest point of the panel, works with Sound Physics Remastered), a screen that emits light under shaders, and a room that takes on the colours of what is playing (ambilight)
 

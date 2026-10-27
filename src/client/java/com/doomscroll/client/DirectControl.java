@@ -15,7 +15,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
 
 
 /**
@@ -170,19 +169,19 @@ public final class DirectControl {
 		int button = info.input();
 
 		// Release: only for buttons whose press we took
-		if (action == GLFW.GLFW_RELEASE) {
+		if (action == com.mojang.blaze3d.platform.InputConstants.RELEASE) {
 			int[] at = heldButtons.remove(button);
 			if (at == null) {
 				return false;
 			}
 			CefBrowserView b = Browsers.getIfPresent();
-			if (b != null && button != GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
+			if (b != null && button != com.mojang.blaze3d.platform.InputConstants.MOUSE_BUTTON_RIGHT) {
 				// The release goes to the pressed point: even if the crosshair moved meanwhile, the click lands on the same element
 				b.onMouseReleased(new MouseButtonEvent(at[0], at[1], info));
 			}
 			return true;
 		}
-		if (action != GLFW.GLFW_PRESS) {
+		if (action != com.mojang.blaze3d.platform.InputConstants.PRESS) {
 			return false;
 		}
 		if (!controlActive(mc)) {
@@ -194,7 +193,7 @@ public final class DirectControl {
 			return false;
 		}
 		// Remote in hand + right click on the screen: let vanilla handle it -> RemoteItem.useOn binds the remote to the screen
-		if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT && mc.player.getMainHandItem().getItem() == Doomscroll.REMOTE_ITEM) {
+		if (button == com.mojang.blaze3d.platform.InputConstants.MOUSE_BUTTON_RIGHT && mc.player.getMainHandItem().getItem() == Doomscroll.REMOTE_ITEM) {
 			return false;
 		}
 
@@ -206,13 +205,13 @@ public final class DirectControl {
 		}
 
 		int[] stale = heldButtons.get(button);
-		if (stale != null && button != GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
+		if (stale != null && button != com.mojang.blaze3d.platform.InputConstants.MOUSE_BUTTON_RIGHT) {
 			// A press whose release was lost (a GUI opened etc.): finish it first, otherwise the browser thinks the button is still held
 			b.onMouseReleased(new MouseButtonEvent(stale[0], stale[1], info));
 		}
 		heldButtons.put(button, new int[] {currentHit.px(), currentHit.py()});
-		if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
-			if ((info.modifiers() & GLFW.GLFW_MOD_SHIFT) != 0) {
+		if (button == com.mojang.blaze3d.platform.InputConstants.MOUSE_BUTTON_RIGHT) {
+			if ((info.modifiers() & com.mojang.blaze3d.platform.InputConstants.MOD_SHIFT) != 0) {
 				Browsers.togglePlayback();
 			} else {
 				setCaptured(mc, !keyboardCaptured);
@@ -223,7 +222,7 @@ public final class DirectControl {
 		ScreenBrowsers.noteExplicitAt(currentHit.pos()); // click = I'm driving the screen
 		b.setFocus(true);
 		b.onMouseClicked(new MouseButtonEvent(currentHit.px(), currentHit.py(), info), false);
-		if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+		if (button == com.mojang.blaze3d.platform.InputConstants.MOUSE_BUTTON_LEFT) {
 			// If the click landed on a text field, have the page refresh its focus report (a second click on the same field fires no focusin)
 			try {
 				var cb = b.getCefBrowser();
@@ -289,8 +288,8 @@ public final class DirectControl {
 		if (!keyboardCaptured || mc.gui.screen() != null) {
 			return false;
 		}
-		if (event.key() == GLFW.GLFW_KEY_ESCAPE) {
-			if (action == GLFW.GLFW_PRESS) {
+		if (event.key() == com.mojang.blaze3d.platform.InputConstants.KEY_ESCAPE) {
+			if (action == com.mojang.blaze3d.platform.InputConstants.PRESS) {
 				setCaptured(mc, false);
 			}
 			return true;
@@ -299,7 +298,7 @@ public final class DirectControl {
 		if (b == null) {
 			return true;
 		}
-		if (action == GLFW.GLFW_RELEASE) {
+		if (action == com.mojang.blaze3d.platform.InputConstants.RELEASE) {
 			b.onKeyReleased(event);
 		} else {
 			ScreenBrowsers.noteExplicitActive();

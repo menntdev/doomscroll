@@ -11,6 +11,8 @@ import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.ClientAvatarState;
 import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.renderer.state.level.FirstPersonHandsAndItemsRenderState;
+import net.minecraft.client.renderer.state.level.PlayerRenderState;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -29,7 +31,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * exactly; only the body is drawn with {@link TabletModel} (thin slab, bezel, camera). Arm: vanilla renderPlayerArm.
  * WebDisplays is public domain (montoyo).
  */
-@Mixin(net.minecraft.client.renderer.ItemInHandRenderer.class)
+@Mixin(net.minecraft.client.renderer.FirstPersonHandsAndItemsRenderer.class)
 public abstract class ItemInHandRendererMixin {
 	private static final float PI = (float) Math.PI;
 	private static final int FULL_LIGHT = 0xF000F0;
@@ -38,14 +40,22 @@ public abstract class ItemInHandRendererMixin {
 	private static final float THICK = 0.022f;
 
 	@Shadow
-	protected abstract void renderPlayerArm(PoseStack pose, SubmitNodeCollector collector, int light,
-										   float equipProgress, float swingProgress, HumanoidArm arm);
+	private void renderPlayerArm(PoseStack pose, SubmitNodeCollector collector, int light,
+								 float equipProgress, float swingProgress, HumanoidArm arm, PlayerRenderState state) {
+		throw new AssertionError("shadow");
+	}
 
 	@Inject(method = "submitArmWithItem", at = @At("HEAD"), cancellable = true)
-	private void doomscroll$tablet(AbstractClientPlayer player, float partialTick, float pitch, InteractionHand hand,
+	private void doomscroll$tablet(PlayerRenderState state, FirstPersonHandsAndItemsRenderState handsState,
+								   float partialTick, float pitch, InteractionHand hand,
 								   float swingProgress, ItemStack stack, float equipProgress,
 								   PoseStack pose, SubmitNodeCollector collector, int light, CallbackInfo ci) {
 		if (stack.getItem() != Doomscroll.TABLET_ITEM) {
+			return;
+		}
+		// First person only ever draws the local player, and the render state carries no arm or invisibility.
+		AbstractClientPlayer player = Minecraft.getInstance().player;
+		if (player == null) {
 			return;
 		}
 
@@ -70,7 +80,7 @@ public abstract class ItemInHandRendererMixin {
 		// --- Arm (WD renderArmFirstPerson == vanilla renderPlayerArm) ---
 		if (!player.isInvisible()) {
 			pose.pushPose();
-			renderPlayerArm(pose, collector, light, equipProgress, swingProgress, arm);
+			renderPlayerArm(pose, collector, light, equipProgress, swingProgress, arm, state);
 			pose.popPose();
 		}
 
@@ -78,18 +88,18 @@ public abstract class ItemInHandRendererMixin {
 		pose.pushPose();
 		pose.translate(sign * -0.4f * sinSqrtSwing1, 0.2f * sinSqrtSwing2, -0.2f * sinSwing1);
 		pose.translate(sign * 0.56f, -0.52f - equipProgress * 0.6f, -0.72f);
-		pose.mulPose(Axis.YP.rotationDegrees(sign * (45.0f - sinSwing2 * 20.0f)));
-		pose.mulPose(Axis.ZP.rotationDegrees(sign * sinSqrtSwing1 * -20.0f));
-		pose.mulPose(Axis.XP.rotationDegrees(sinSqrtSwing1 * -80.0f));
-		pose.mulPose(Axis.YP.rotationDegrees(sign * -45.0f));
+		pose.rotate(Axis.YP.rotationDegrees(sign * (45.0f - sinSwing2 * 20.0f)));
+		pose.rotate(Axis.ZP.rotationDegrees(sign * sinSqrtSwing1 * -20.0f));
+		pose.rotate(Axis.XP.rotationDegrees(sinSqrtSwing1 * -80.0f));
+		pose.rotate(Axis.YP.rotationDegrees(sign * -45.0f));
 
 		if (sideHold) {
 			pose.translate(0.0f, 0.0f, -0.2f);
-			pose.mulPose(Axis.YP.rotationDegrees(20.0f * -sign));
+			pose.rotate(Axis.YP.rotationDegrees(20.0f * -sign));
 			float total = 0.475f;
 			float off = -0.025f; // WD: "gotta love magic numbers"
 			pose.translate(-(total - off) + (off * sign), -0.1f, 0.0f);
-			pose.mulPose(Axis.ZP.rotationDegrees(1.0f));
+			pose.rotate(Axis.ZP.rotationDegrees(1.0f));
 		} else if (sign >= 0) {
 			pose.translate(-1.065f, 0.0f, 0.0f);
 		} else {
@@ -148,8 +158,8 @@ public abstract class ItemInHandRendererMixin {
 		ClientAvatarState st = player.avatarState();
 		float f1 = st.getBackwardsInterpolatedWalkDistance(partialTick);
 		float f2 = st.getInterpolatedBob(partialTick);
-		pose.mulPose(Axis.XP.rotationDegrees(-k * Math.abs(Mth.cos(f1 * PI - 0.2f) * f2) * 5.0f));
-		pose.mulPose(Axis.ZP.rotationDegrees(-k * Mth.sin(f1 * PI) * f2 * 3.0f));
+		pose.rotate(Axis.XP.rotationDegrees(-k * Math.abs(Mth.cos(f1 * PI - 0.2f) * f2) * 5.0f));
+		pose.rotate(Axis.ZP.rotationDegrees(-k * Mth.sin(f1 * PI) * f2 * 3.0f));
 		pose.translate(-k * Mth.sin(f1 * PI) * f2 * 0.5f, k * Math.abs(Mth.cos(f1 * PI) * f2), 0.0f);
 	}
 
