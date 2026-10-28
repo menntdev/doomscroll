@@ -29,6 +29,14 @@ public final class DirectControl {
 
 	private static boolean keyboardCaptured = false;
 	/**
+	 * Owner token for Minecraft's text input. Since 26.3 (SDL) the game only receives typed characters while text
+	 * input is switched on, and it switches it on for a focused text field only. A captured in-world screen has no
+	 * text field, so, like the sign editor, it switches text input on itself; otherwise only key presses (Enter,
+	 * Backspace, arrows) would reach the page and no letters.
+	 */
+	private static final Object TEXT_INPUT_OWNER = new Object();
+	private static boolean textInputOn = false;
+	/**
 	 * The screen at the moment the keyboard was bound. Keys always go to this screen: otherwise, once the
 	 * crosshair slipped off the panel, the rest of what you typed went to the screen next to it.
 	 */
@@ -95,6 +103,7 @@ public final class DirectControl {
 	}
 
 	public static void tick(Minecraft mc) {
+		syncTextInput(mc);
 		if (!inWorld(mc)) {
 			currentHit = null;
 			if (keyboardCaptured && mc.gui.screen() != null) {
@@ -351,6 +360,22 @@ public final class DirectControl {
 		return Browsers.getIfPresent();
 	}
 
+	/**
+	 * Text input follows the capture: on while the keyboard is bound to a screen and no GUI is open, off otherwise.
+	 * startTextInput is idempotent, so re-asserting it every tick is cheap and recovers from a GUI having switched it
+	 * off in between; stopTextInput only acts while this token still owns it, so a chat box keeps its own.
+	 */
+	private static void syncTextInput(Minecraft mc) {
+		boolean want = keyboardCaptured && mc.gui.screen() == null;
+		if (want) {
+			mc.textInputManager().startTextInput(TEXT_INPUT_OWNER);
+			textInputOn = true;
+		} else if (textInputOn) {
+			mc.textInputManager().stopTextInput(TEXT_INPUT_OWNER);
+			textInputOn = false;
+		}
+	}
+
 	public static void setCaptured(Minecraft mc, boolean captured) {
 		CefBrowserView old = capturedBrowser();
 		keyboardCaptured = captured;
@@ -371,6 +396,7 @@ public final class DirectControl {
 		} else if (mc.player != null) {
 			mc.player.sendOverlayMessage(Component.translatable("message.doomscroll.keyboard.released"));
 		}
+		syncTextInput(mc);
 	}
 
 	/** A screen is gone: drop only the state bound to that screen. */

@@ -424,6 +424,12 @@ public class TabletScreen extends Screen {
 		super.tick();
 		// Keep the main browser alive while the tablet is open (so it does not idle-close when there is no screen block)
 		Browsers.keepAlive();
+		// Since 26.3 (SDL) characters only arrive while text input is on, and the game switches it on for a focused
+		// text field only. Typing into the page has no text field, so the tablet keeps it on itself while the address
+		// bar is not focused; the address bar takes it over while focused. Idempotent, so every tick is fine.
+		if (urlBox == null || !urlBox.isFocused()) {
+			minecraft.textInputManager().startTextInput(this);
+		}
 		if (urlBox != null && !urlBox.isFocused()) {
 			String cur = Browsers.tabletUrl();
 			if (!cur.equals(urlBox.getValue())) {
@@ -434,6 +440,7 @@ public class TabletScreen extends Screen {
 
 	@Override
 	public void removed() {
+		minecraft.textInputManager().stopTextInput(this);
 		CefBrowserView b = Browsers.getTabletIfPresent();
 		if (b != null) {
 			b.setFocus(false);
