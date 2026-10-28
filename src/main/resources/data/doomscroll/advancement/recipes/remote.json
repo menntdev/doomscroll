@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "doomscroll:remote"
+        "recipes": "doomscroll:remote"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
