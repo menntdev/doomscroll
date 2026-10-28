@@ -27,6 +27,10 @@
 		{
 			"config": "doomscroll.client.mixins.json",
 			"environment": "client"
+		},
+		{
+			"config": "doomscroll.punchy.mixins.json",
+			"environment": "client"
 		}
 	],
 	"depends": {

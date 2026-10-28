@@ -1,0 +1,11 @@
+{
+	"required": false,
+	"minVersion": "0.8",
+	"package": "com.doomscroll.client.mixin",
+	"client": [
+		"PunchyArmRendererMixin"
+	],
+	"injectors": {
+		"defaultRequire": 0
+	}
+}
